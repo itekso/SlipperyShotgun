@@ -19,8 +19,8 @@ namespace SlipperyShotgun.Patches
             {
                 __instance.playerHeldBy.DiscardHeldObject();
 
-                Effects.PlaySillyExtras(__instance.transform.position);
-                Effects.PlaySoundEffect(__instance.transform.position);
+                Effects.PlaySillyExtrasServerRpc(__instance.transform.position);
+                Effects.PlaySoundEffectServerRpc(__instance.transform.position);
 
                 if (SlipperyOptions.LogLevelConfig is not { Value: SlipperyOptions.LogLevel.None })
                 {
