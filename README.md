@@ -1,7 +1,9 @@
  ### Slippery Shotgun
-> Maybe you weren't cutout for this shooting stuff.
+ ##
+*Maybe you weren't cutout for this shooting stuff.*
 > - Easily configurable drop chance with support for the M4 and Revolver from [Piggys Variety Mod](https://thunderstore.io/c/lethal-company/p/Piggy/Piggys_Variety_Mod/)
 > - Now with *Silly Extras* like `Confetti`, `Explosion`, and `Carbomb` **AND** `sound effects`!
+##
 #### Also Check Out: 
 > ##### Discord
 > - [Lethal Company Modding](https://discord.gg/lcmod) (Discuss all issues here.)
@@ -10,6 +12,6 @@
 > - [SCP: Company Breach](https://thunderstore.io/c/lethal-company/p/itekso/SCPCompanyBreach/)
 > - [SCP: Company Breach Theme](https://thunderstore.io/c/lethal-company/p/itekso/SCPCompanyBreach/)
 > - [SCP Posters](https://thunderstore.io/c/lethal-company/p/itekso/SCP_Posters/)
-> ##### Contribute
-> - [Github](https://github.com/itekso/SlipperyShotgun)
-> - [Donate](https://ko-fi.com/itekso)
+
+##
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P615QPPM)
