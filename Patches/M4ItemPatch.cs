@@ -3,6 +3,7 @@ using PiggyVarietyMod.Patches;
 using UnityEngine;
 using Random = SlipperyShotgun.Logic.Random;
 using SlipperyShotgun.Logic;
+using SlipperyShotgun.Configuration;
 
 namespace SlipperyShotgun.Patches
 {
@@ -15,7 +16,7 @@ namespace SlipperyShotgun.Patches
         {
             if (__instance.playerHeldBy == null || __instance.playerHeldBy.currentlyHeldObjectServer == null) return;
 
-            if (Random.ShouldDropItem(SlipperyShotgun.RifleDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
+            if (Random.ShouldDropItem(SlipperyOptions.RifleDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
             {
                 __instance.isFiring = false;
                 __instance.isReloading = false;
@@ -27,15 +28,15 @@ namespace SlipperyShotgun.Patches
                 Effects.PlaySillyExtras(__instance.transform.position);
                 Effects.PlaySoundEffect(__instance.transform.position);
 
-                if (SlipperyShotgun.LogLevelConfig.Value != LogLevel.None)
+                if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
                 {
                     SlipperyShotgun.Logger.LogInfo("You call yourself a Scavenger?!");
                 }
             }
 
-            if (SlipperyShotgun.LogLevelConfig.Value == LogLevel.Debug)
+            if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
-                SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyShotgun.RifleDropChance.Value}");
+                SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyOptions.RifleDropChance.Value}");
             }
         }
     }

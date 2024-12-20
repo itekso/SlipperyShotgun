@@ -3,6 +3,7 @@ using PiggyVarietyMod.Patches;
 using UnityEngine;
 using Random = SlipperyShotgun.Logic.Random;
 using SlipperyShotgun.Logic;
+using SlipperyShotgun.Configuration;
 
 namespace SlipperyShotgun.Patches
 {
@@ -15,7 +16,7 @@ namespace SlipperyShotgun.Patches
         {
             if (__instance.playerHeldBy == null || __instance.playerHeldBy.currentlyHeldObjectServer == null) return;
 
-            if (Random.ShouldDropItem(SlipperyShotgun.RevolverDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
+            if (Random.ShouldDropItem(SlipperyOptions.RevolverDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
             {
                 __instance.isReloading = false;
                 __instance.cantFire = false;
@@ -26,15 +27,15 @@ namespace SlipperyShotgun.Patches
                 Effects.PlaySillyExtras(__instance.transform.position);
                 Effects.PlaySoundEffect(__instance.transform.position);
 
-                if (SlipperyShotgun.LogLevelConfig.Value != LogLevel.None)
+                if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
                 {
                     SlipperyShotgun.Logger.LogInfo("This town ain't big enough for the two of us!");
                 }
             }
 
-            if (SlipperyShotgun.LogLevelConfig.Value == LogLevel.Debug)
+            if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
-                SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyShotgun.RevolverDropChance.Value}");
+                SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyOptions.RevolverDropChance.Value}");
             }
         }
     }

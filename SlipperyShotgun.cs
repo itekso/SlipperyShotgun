@@ -1,37 +1,14 @@
 using System.Linq;
 using BepInEx;
 using BepInEx.Bootstrap;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using SlipperyShotgun.Configuration;
 using SlipperyShotgun.Patches;
 using UnityEngine;
 
 namespace SlipperyShotgun
 {
-    public enum LogLevel
-    {
-        None,
-        Info,
-        Debug
-    }
-
-    public enum SillyExtrasOption
-    {
-        None,
-        Confetti,
-        Explosion,
-        CarBomb
-    }
-
-    public enum SoundEffectOption
-    {
-        None,
-        Bonk,
-        Boo,
-        Slip
-    }
-
     [BepInPlugin(modGUID, modName, modVersion)]
     [BepInDependency("Piggy.PiggyVarietyMod", BepInDependency.DependencyFlags.SoftDependency)]
     public class SlipperyShotgun : BaseUnityPlugin
@@ -44,28 +21,16 @@ namespace SlipperyShotgun
         public new static ManualLogSource Logger { get; private set; } = null!;
         private static Harmony? Harmony { get; set; }
 
-        public static ConfigEntry<int> ShotgunDropChance { get; private set; } = null!;
-        public static ConfigEntry<int> RifleDropChance { get; private set; } = null!;
-        public static ConfigEntry<int> RevolverDropChance { get; private set; } = null!;
-        public static ConfigEntry<LogLevel> LogLevelConfig { get; private set; } = null!;
-        public static ConfigEntry<SillyExtrasOption> SillyExtras { get; private set; } = null!;
-        public static ConfigEntry<SoundEffectOption> SoundEffect { get; private set; } = null!;
-
         private void Awake()
         {
             Logger = base.Logger;
             Instance = this;
 
-            ShotgunDropChance = Config.Bind("General", "ShotgunDropChance", 45, "Percent chance to drop the shotgun (0-100)");
-            RifleDropChance = Config.Bind("General", "RifleDropChance", 25, "Percent chance to drop the Rifle (0-100)");
-            RevolverDropChance = Config.Bind("General", "RevolverDropChance", 35, "Percent chance to drop the Revolver (0-100)");
-            LogLevelConfig = Config.Bind("General", "LogLevel", LogLevel.Info, "Log level (None, Info, Debug)");
-            SillyExtras = Config.Bind("General", "SillyExtras", SillyExtrasOption.None, "Enable silly extras (None, Confetti, Explosion, CarBomb)");
-            SoundEffect = Config.Bind("General", "SoundEffect", SoundEffectOption.None, "Sound effect to play (None, Bonk, Boo, Slip)");
+            SlipperyOptions.Initialize(Config);
 
             PatchShotgun();
 
-            if (LogLevelConfig?.Value != LogLevel.None)
+            if (SlipperyOptions.LogLevelConfig?.Value != SlipperyOptions.LogLevel.None)
             {
                 Logger.LogInfo($"{modName} v{modVersion} has loaded!");
             }
@@ -86,14 +51,14 @@ namespace SlipperyShotgun
         {
             Harmony ??= new Harmony(modGUID);
 
-            if (LogLevelConfig.Value == LogLevel.Debug)
+            if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
                 Logger.LogDebug("Patching ShotgunItem...");
             }
 
             Harmony.PatchAll(typeof(ShotgunItemPatch));
 
-            if (LogLevelConfig.Value == LogLevel.Debug)
+            if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
                 Logger.LogDebug("Finished patching ShotgunItem!");
             }
@@ -101,14 +66,14 @@ namespace SlipperyShotgun
 
         internal static void Unpatch()
         {
-            if (LogLevelConfig.Value == LogLevel.Debug)
+            if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
                 Logger.LogDebug("Unpatching...");
             }
 
             Harmony?.UnpatchSelf();
 
-            if (LogLevelConfig.Value == LogLevel.Debug)
+            if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
                 Logger.LogDebug("Finished unpatching!");
             }

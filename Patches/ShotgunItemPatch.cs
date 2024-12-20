@@ -2,6 +2,7 @@
 using UnityEngine;
 using Random = SlipperyShotgun.Logic.Random;
 using SlipperyShotgun.Logic;
+using SlipperyShotgun.Configuration;
 
 namespace SlipperyShotgun.Patches
 {
@@ -14,22 +15,22 @@ namespace SlipperyShotgun.Patches
         {
             if (__instance.playerHeldBy == null || __instance.playerHeldBy.currentlyHeldObjectServer == null) return;
 
-            if (Random.ShouldDropItem(SlipperyShotgun.ShotgunDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
+            if (Random.ShouldDropItem(SlipperyOptions.ShotgunDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
             {
                 __instance.playerHeldBy.DiscardHeldObject();
 
                 Effects.PlaySillyExtras(__instance.transform.position);
                 Effects.PlaySoundEffect(__instance.transform.position);
 
-                if (SlipperyShotgun.LogLevelConfig is not { Value: LogLevel.None })
+                if (SlipperyOptions.LogLevelConfig is not { Value: SlipperyOptions.LogLevel.None })
                 {
                     SlipperyShotgun.Logger.LogInfo("Try putting more stats in to handling!");
                 }
             }
 
-            if (SlipperyShotgun.LogLevelConfig is { Value: LogLevel.Debug })
+            if (SlipperyOptions.LogLevelConfig is { Value: SlipperyOptions.LogLevel.Debug })
             {
-                SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyShotgun.ShotgunDropChance.Value}");
+                SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyOptions.ShotgunDropChance.Value}");
             }
         }
     }

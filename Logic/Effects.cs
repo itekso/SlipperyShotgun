@@ -1,4 +1,5 @@
 using UnityEngine;
+using SlipperyShotgun.Configuration;
 
 namespace SlipperyShotgun.Logic
 {
@@ -6,13 +7,13 @@ namespace SlipperyShotgun.Logic
     {
         public static void PlaySillyExtras(Vector3 position)
         {
-            if (SlipperyShotgun.SillyExtras.Value == SillyExtrasOption.None) return;
+            if (SlipperyOptions.SillyExtras.Value == SlipperyOptions.SillyExtrasOption.None) return;
 
-            var prefabName = SlipperyShotgun.SillyExtras.Value switch
+            var prefabName = SlipperyOptions.SillyExtras.Value switch
             {
-                SillyExtrasOption.Confetti => "EasterEggExplosionParticle",
-                SillyExtrasOption.Explosion => "ExplosionEffect",
-                SillyExtrasOption.CarBomb => "VehicleExplosionEffect",
+                SlipperyOptions.SillyExtrasOption.Confetti => "EasterEggExplosionParticle",
+                SlipperyOptions.SillyExtrasOption.Explosion => "ExplosionEffect",
+                SlipperyOptions.SillyExtrasOption.CarBomb => "VehicleExplosionEffect",
                 _ => null
             };
 
@@ -32,13 +33,13 @@ namespace SlipperyShotgun.Logic
 
         public static void PlaySoundEffect(Vector3 position)
         {
-            if (SlipperyShotgun.SoundEffect.Value == SoundEffectOption.None) return;
+            if (SlipperyOptions.SoundEffect.Value == SlipperyOptions.SoundEffectOption.None) return;
 
-            var soundName = SlipperyShotgun.SoundEffect.Value switch
+            var soundName = SlipperyOptions.SoundEffect.Value switch
             {
-                SoundEffectOption.Bonk => "Bonk",
-                SoundEffectOption.Boo => "Boo",
-                SoundEffectOption.Slip => "Slip",
+                SlipperyOptions.SoundEffectOption.Bonk => "Bonk",
+                SlipperyOptions.SoundEffectOption.Boo => "Boo",
+                SlipperyOptions.SoundEffectOption.Slip => "Slip",
                 _ => null
             };
 
