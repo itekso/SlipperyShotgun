@@ -10,3 +10,6 @@
 > - [SCP: Company Breach](https://thunderstore.io/c/lethal-company/p/itekso/SCPCompanyBreach/)
 > - [SCP: Company Breach Theme](https://thunderstore.io/c/lethal-company/p/itekso/SCPCompanyBreach/)
 > - [SCP Posters](https://thunderstore.io/c/lethal-company/p/itekso/SCP_Posters/)
+> ##### Contribute
+> - [Github](https://github.com/itekso/SlipperyShotgun)
+> - [Donate](https://ko-fi.com/itekso)
