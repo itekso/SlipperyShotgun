@@ -9,7 +9,7 @@ namespace SlipperyShotgun
     {
         private static AssetBundle? _bundle;
 
-        public static AssetBundle LoadEmbeddedAssetBundle()
+        public static AssetBundle? LoadEmbeddedAssetBundle()
         {
             if (_bundle != null)
             {
@@ -22,7 +22,7 @@ namespace SlipperyShotgun
             if (resourceName == null)
             {
                 SlipperyShotgun.Logger.LogError("Failed to find embedded resource ending with 'slippery'");
-                return null!;
+                return null;
             }
 
             using (Stream stream = assembly.GetManifestResourceStream(resourceName))
@@ -30,7 +30,7 @@ namespace SlipperyShotgun
                 if (stream == null)
                 {
                     SlipperyShotgun.Logger.LogError($"Failed to load embedded resource: {resourceName}");
-                    return null!;
+                    return null;
                 }
 
                 byte[] bundleData = new byte[stream.Length];
@@ -40,7 +40,7 @@ namespace SlipperyShotgun
                 if (_bundle == null)
                 {
                     SlipperyShotgun.Logger.LogError("Failed to load AssetBundle from memory!");
-                    return null!;
+                    return null;
                 }
 
                 return _bundle;

@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
 using PiggyVarietyMod.Patches;
-using UnityEngine;
-using Random = SlipperyShotgun.Logic.Random;
 using SlipperyShotgun.Logic;
 using SlipperyShotgun.Configuration;
 
@@ -10,34 +8,45 @@ namespace SlipperyShotgun.Patches
     [HarmonyPatch(typeof(M4Item))]
     public static class M4ItemPatch
     {
-        [HarmonyPatch("ShootGun")]
+        [HarmonyPatch("Start")]
         [HarmonyPostfix]
-        public static void PostfixShootGun(M4Item __instance, Vector3 gunPosition, Vector3 gunForward)
+        public static void PostfixStart(M4Item __instance)
         {
-            if (__instance.playerHeldBy == null || __instance.playerHeldBy.currentlyHeldObjectServer == null) return;
+            SlipperyBehaviour slippery = __instance.gameObject.GetComponent<SlipperyBehaviour>() ?? __instance.gameObject.AddComponent<SlipperyBehaviour>();
+            slippery.RandomSeed = __instance.itemProperties.itemId + StartOfRound.Instance.currentLevelID + StartOfRound.Instance.randomMapSeed;
+        }
 
-            if (Random.ShouldDropItem(SlipperyOptions.RifleDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
-            {
-                __instance.isFiring = false;
-                __instance.isReloading = false;
-                __instance.cantFire = false;
-                __instance.isInspecting = false;
-
-                __instance.playerHeldBy.DiscardHeldObject();
-
-                Effects.PlaySillyExtrasServerRpc(__instance.transform.position);
-                Effects.PlaySoundEffectServerRpc(__instance.transform.position);
-
-                if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
-                {
-                    SlipperyShotgun.Logger.LogInfo("You call yourself a Scavenger?!");
-                }
-            }
+        [HarmonyPatch("ShootGunAndSync")]
+        [HarmonyPrefix]
+        public static bool PrefixShootGunAndSync(M4Item __instance, bool heldByPlayer)
+        {
+            // Ensure the local player is firing the gun
+            if (!heldByPlayer) return true;
 
             if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
                 SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyOptions.RifleDropChance.Value}");
             }
+            
+            SlipperyBehaviour slippery = __instance.gameObject.GetComponent<SlipperyBehaviour>();
+            if (!slippery.ShouldDropItem(SlipperyOptions.RifleDropChance.Value)) return true;
+
+            __instance.isFiring = false;
+            __instance.isReloading = false;
+            __instance.cantFire = false;
+            __instance.isInspecting = false;
+
+            __instance.playerHeldBy.StartCoroutine(__instance.playerHeldBy.waitToEndOfFrameToDiscard());
+
+            SlipperyManager.PlaySillyExtrasServerRpc(slippery.gameObject);
+            SlipperyManager.PlaySoundEffectServerRpc(slippery.gameObject);
+
+            if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
+            {
+                SlipperyShotgun.Logger.LogInfo("You call yourself a Scavenger?!");
+            }
+
+            return !SlipperyOptions.RifleDropPreventsFiring.Value;
         }
     }
 }

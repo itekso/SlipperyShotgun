@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
 using PiggyVarietyMod.Patches;
-using UnityEngine;
-using Random = SlipperyShotgun.Logic.Random;
 using SlipperyShotgun.Logic;
 using SlipperyShotgun.Configuration;
 
@@ -10,33 +8,44 @@ namespace SlipperyShotgun.Patches
     [HarmonyPatch(typeof(RevolverItem))]
     public static class RevolverItemPatch
     {
-        [HarmonyPatch("ShootGun")]
+        [HarmonyPatch("Start")]
         [HarmonyPostfix]
-        public static void PostfixShootGun(RevolverItem __instance, Vector3 revolverPosition, Vector3 revolverForward)
+        public static void PostfixStart(RevolverItem __instance)
         {
-            if (__instance.playerHeldBy == null || __instance.playerHeldBy.currentlyHeldObjectServer == null) return;
+            SlipperyBehaviour slippery = __instance.gameObject.GetComponent<SlipperyBehaviour>() ?? __instance.gameObject.AddComponent<SlipperyBehaviour>();
+            slippery.RandomSeed = __instance.itemProperties.itemId + StartOfRound.Instance.currentLevelID + StartOfRound.Instance.randomMapSeed;
+        }
 
-            if (Random.ShouldDropItem(SlipperyOptions.RevolverDropChance.Value, __instance.itemProperties.itemId, StartOfRound.Instance.currentLevelID, StartOfRound.Instance.randomMapSeed))
-            {
-                __instance.isReloading = false;
-                __instance.cantFire = false;
-                __instance.isCylinderMoving = false;
-
-                __instance.playerHeldBy.DiscardHeldObject();
-
-                Effects.PlaySillyExtrasServerRpc(__instance.transform.position);
-                Effects.PlaySoundEffectServerRpc(__instance.transform.position);
-
-                if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
-                {
-                    SlipperyShotgun.Logger.LogInfo("This town ain't big enough for the two of us!");
-                }
-            }
+        [HarmonyPatch("ShootGunAndSync")]
+        [HarmonyPrefix]
+        public static bool PrefixShootGunAndSync(RevolverItem __instance, bool heldByPlayer)
+        {
+            // Ensure the local player is firing the gun
+            if (!heldByPlayer) return true;
 
             if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
                 SlipperyShotgun.Logger.LogDebug($"Configured drop chance: {SlipperyOptions.RevolverDropChance.Value}");
             }
+            
+            SlipperyBehaviour slippery = __instance.gameObject.GetComponent<SlipperyBehaviour>();
+            if (!slippery.ShouldDropItem(SlipperyOptions.RevolverDropChance.Value)) return true;
+            
+            __instance.isReloading = false;
+            __instance.cantFire = false;
+            __instance.isCylinderMoving = false;
+
+            __instance.playerHeldBy.StartCoroutine(__instance.playerHeldBy.waitToEndOfFrameToDiscard());
+
+            SlipperyManager.PlaySillyExtrasServerRpc(slippery.gameObject);
+            SlipperyManager.PlaySoundEffectServerRpc(slippery.gameObject);
+
+            if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
+            {
+                SlipperyShotgun.Logger.LogInfo("This town ain't big enough for the two of us!");
+            }
+
+            return !SlipperyOptions.RevolverDropPreventsFiring.Value;
         }
     }
 }

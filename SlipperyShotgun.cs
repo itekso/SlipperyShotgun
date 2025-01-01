@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
@@ -10,16 +11,18 @@ using UnityEngine;
 namespace SlipperyShotgun
 {
     [BepInPlugin(modGUID, modName, modVersion)]
+    [BepInDependency(StaticNetcodeLib.StaticNetcodeLib.Guid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.sigurd.csync", "5.0.1")]
     [BepInDependency("Piggy.PiggyVarietyMod", BepInDependency.DependencyFlags.SoftDependency)]
     public class SlipperyShotgun : BaseUnityPlugin
     {
-        private const string modGUID = "com.itekso.SlipperyShotgun";
-        private const string modName = "SlipperyShotgun";
-        private const string modVersion = "1.2.0";
+        internal const string modGUID = "com.itekso.SlipperyShotgun";
+        internal const string modName = "SlipperyShotgun";
+        internal const string modVersion = "1.2.0";
 
         public static SlipperyShotgun Instance { get; private set; } = null!;
         public new static ManualLogSource Logger { get; private set; } = null!;
-        private static Harmony? Harmony { get; set; }
+        private static Harmony Harmony { get; set; } = null!;
 
         private void Awake()
         {
@@ -30,16 +33,16 @@ namespace SlipperyShotgun
 
             PatchShotgun();
 
-            if (SlipperyOptions.LogLevelConfig?.Value != SlipperyOptions.LogLevel.None)
+            if (SlipperyOptions.LogLevelConfig.Value != SlipperyOptions.LogLevel.None)
             {
                 Logger.LogInfo($"{modName} v{modVersion} has loaded!");
             }
 
-            if (Chainloader.PluginInfos?.Keys.Any(k => k == "Piggy.PiggyVarietyMod") == true)
+            if (Chainloader.PluginInfos.Keys.Any(k => k == "Piggy.PiggyVarietyMod") == true)
             {
                 Logger.LogInfo("Piggy's Variety Mod found. Applying patches for RevolverItem and M4Item.");
-                Harmony?.PatchAll(typeof(RevolverItemPatch));
-                Harmony?.PatchAll(typeof(M4ItemPatch));
+                Harmony.PatchAll(typeof(RevolverItemPatch));
+                Harmony.PatchAll(typeof(M4ItemPatch));
             }
             else
             {
@@ -71,7 +74,7 @@ namespace SlipperyShotgun
                 Logger.LogDebug("Unpatching...");
             }
 
-            Harmony?.UnpatchSelf();
+            Harmony.UnpatchSelf();
 
             if (SlipperyOptions.LogLevelConfig.Value == SlipperyOptions.LogLevel.Debug)
             {
@@ -79,23 +82,23 @@ namespace SlipperyShotgun
             }
         }
 
-        public static GameObject FindPrefabByName(string prefabName)
+        public static GameObject? FindPrefabByName(string prefabName)
         {
             var prefab = Resources.FindObjectsOfTypeAll<GameObject>().FirstOrDefault(obj => obj.name == prefabName);
             if (prefab == null)
             {
                 Logger.LogError($"Prefab '{prefabName}' not found.");
             }
-            return prefab!;
+            return prefab;
         }
 
-        public static AudioClip LoadSoundEffect(string soundName)
+        public static AudioClip? LoadSoundEffect(string soundName)
         {
             var bundle = AssetBundleManager.LoadEmbeddedAssetBundle();
             if (bundle == null)
             {
                 Logger.LogError("Failed to load asset bundle.");
-                return null!;
+                return null;
             }
 
             var clip = bundle.LoadAsset<AudioClip>(soundName);
@@ -104,7 +107,7 @@ namespace SlipperyShotgun
                 Logger.LogError($"Failed to load sound effect: {soundName}");
             }
 
-            return clip!;
+            return clip;
         }
     }
 }
